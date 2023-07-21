@@ -49,10 +49,26 @@
             <div>{{ scope.row.size_mb }}MB</div>
           </template>
         </el-table-column>
-
-        <el-table-column label="创建时间" width="200">
+        <el-table-column label="转码" width="150">
+          <template slot-scope="scope">
+            <span v-if="checkTrans(scope.row.storage_file_id)">已转码</span>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="上传时间" width="200">
           <template slot-scope="scope">
             <div>{{ scope.row.created_at | dateFormat }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" fixed="right" :width="120">
+          <template slot-scope="scope">
+            <p-link
+              v-if="scope.row.storage_driver === 'aliyun'"
+              text="转码"
+              p="ali-hls-transcode.submit"
+              @click="submit(scope.row.storage_file_id)"
+              type="primary"
+            ></p-link>
           </template>
         </el-table-column>
       </el-table>
@@ -107,6 +123,7 @@ export default {
       loading: false,
       results: [],
       visible: false,
+      records: {},
     };
   },
   computed: {
@@ -138,6 +155,9 @@ export default {
     next();
   },
   methods: {
+    checkTrans(val) {
+      return typeof this.records[val] !== "undefined";
+    },
     openUploadItem() {
       if (this.isNoService) {
         this.$message.warning("请先在系统配置的视频存储中完成参数配置");
@@ -197,6 +217,13 @@ export default {
         this.loading = false;
         this.results = res.data.data;
         this.total = res.data.total;
+        var newbox = [];
+        for (var i = 0; i < this.results.length; i++) {
+          if (this.results[i].storage_driver === "aliyun") {
+            newbox.push(this.results[i].storage_file_id);
+          }
+        }
+        this.getAliRecords(newbox);
       });
     },
     destorymulti() {
@@ -229,6 +256,38 @@ export default {
         })
         .catch(() => {
           //点击删除按钮的操作
+        });
+    },
+    getAliRecords(newbox) {
+      this.$api.Resource.AliyunTranscodeRecords({
+        file_ids: newbox,
+      })
+        .then((res) => {
+          this.records = res.data.records;
+          this.loading = false;
+        })
+        .catch((e) => {
+          this.$message.error(e.message);
+        });
+    },
+    submit(fileId) {
+      if (this.loading) {
+        return;
+      }
+      let ids = [];
+      ids.push(fileId);
+      this.loading = true;
+      this.$api.Resource.AliyunTranscode({
+        file_ids: ids,
+      })
+        .then(() => {
+          this.$message.success(this.$t("common.success"));
+          this.loading = false;
+          this.getData();
+        })
+        .catch((e) => {
+          this.$message.error(e.message);
+          this.loading = false;
         });
     },
   },

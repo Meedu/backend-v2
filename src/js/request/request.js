@@ -33,7 +33,13 @@ const Api = {
       return get(`/backend/api/v1/media/videos/index`, params);
     },
     VideosDestroyMulti(params) {
-      return post(`/backend/api/v1/media/videos/delete/multi `, params);
+      return post(`/backend/api/v1/media/videos/delete/multi`, params);
+    },
+    AliyunTranscode(params) {
+      return post(`/backend/addons/AliyunHls/transcode-submit`, params);
+    },
+    AliyunTranscodeRecords(params) {
+      return get(`/backend/addons/AliyunHls/transcode-records`, params);
     },
   },
   Stat: {
