@@ -3,16 +3,16 @@
     <div class="float-left j-b-flex mb-30">
       <div class="d-flex">
         <p-button
-          text="批量删除"
-          p="promoCode.destroy.multi"
-          @click="destorymulti()"
-          type="danger"
+          text="新建优惠码"
+          p="promoCode.store"
+          @click="$router.push({ name: 'Createcode' })"
+          type="primary"
         >
         </p-button>
         <p-button
-          text="添加"
-          p="promoCode.store"
-          @click="$router.push({ name: 'Createcode' })"
+          text="批量生成"
+          p="promoCode.generator"
+          @click="$router.push({ name: 'CreateMulticode' })"
           type="primary"
         >
         </p-button>
@@ -24,10 +24,10 @@
         >
         </p-button>
         <p-button
-          text="批量生成"
-          p="promoCode.generator"
-          @click="$router.push({ name: 'CreateMulticode' })"
-          type="primary"
+          text="批量删除"
+          p="promoCode.destroy.multi"
+          @click="destorymulti()"
+          type="danger"
         >
         </p-button>
       </div>

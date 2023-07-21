@@ -17,7 +17,7 @@ const zh = {
     "order-refund": "退款订单",
     rechargeorder: "iOS充值",
     promocode: "优惠码",
-    promocodecreate: "添加优惠码",
+    promocodecreate: "新建优惠码",
     promocode_import: "优惠码批量导入",
     promocode_export: "优惠码批量生成",
     withdrawOrders: "余额提现",

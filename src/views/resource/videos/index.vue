@@ -2,6 +2,9 @@
   <div class="meedu-main-body">
     <div class="float-left j-b-flex mb-30">
       <div class="d-flex">
+        <el-button type="primary" @click="openUploadItem()">
+          上传视频
+        </el-button>
         <p-button
           text="批量删除"
           p="media.video.delete.multi"
@@ -67,14 +70,25 @@
         </el-pagination>
       </div>
     </div>
+    <transition name="fade" v-if="visible">
+      <div class="upload-dialog-mask">
+        <upload-video-item
+          @close="visible = false"
+          @change="completeUpload"
+        ></upload-video-item>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import DurationText from "@/components/duration-text";
+import UploadVideoItem from "@/components/upload-video-item";
 export default {
   components: {
     DurationText,
+    UploadVideoItem,
   },
   data() {
     return {
@@ -92,7 +106,28 @@ export default {
       total: 0,
       loading: false,
       results: [],
+      visible: false,
     };
+  },
+  computed: {
+    ...mapState(["user", "systemConfig"]),
+    isNoService() {
+      return this.systemConfig.video.default_service === "";
+    },
+    isLocalService() {
+      return this.systemConfig.video.default_service === "local";
+    },
+    isTenService() {
+      return this.systemConfig.video.default_service === "tencent";
+    },
+    isAliService() {
+      return this.systemConfig.video.default_service === "aliyun";
+    },
+  },
+  watch: {
+    visible() {
+      this.paginationReset();
+    },
   },
   activated() {
     this.getData();
@@ -103,6 +138,16 @@ export default {
     next();
   },
   methods: {
+    openUploadItem() {
+      if (this.isNoService) {
+        this.$message.warning("请先在系统配置的视频存储中完成参数配置");
+        return;
+      }
+      this.visible = true;
+    },
+    completeUpload(val) {
+      this.visible = false;
+    },
     fileSizeConversion(byte) {
       var size = `${(byte / (1024 * 1024)).toFixed(2)}`;
       const sizeStr = `${size}`;
@@ -191,8 +236,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.ori-charge {
-  color: #999;
-  text-decoration: line-through;
+.upload-dialog-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2001;
+  transform: translateZ(1000px); /*这里是给safari用的*/
+  background-color: rgba(0, 0, 0, 0.5);
 }
 </style>
