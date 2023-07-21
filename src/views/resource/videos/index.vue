@@ -246,7 +246,8 @@ export default {
         for (var i = 0; i < this.results.length; i++) {
           if (this.results[i].storage_driver === "aliyun") {
             newbox.push(this.results[i].storage_file_id);
-          } else if (this.results[i].storage_driver === "tencent") {
+          }
+          if (this.results[i].storage_driver === "tencent") {
             tenbox.push(this.results[i].storage_file_id);
           }
         }
@@ -254,7 +255,7 @@ export default {
           this.getAliRecords(newbox);
         }
         if (tenbox.length > 0 && this.enabledAddons["TencentCloudHls"]) {
-          this.getTenRecords(newbox);
+          this.getTenRecords(tenbox);
         }
       });
     },
