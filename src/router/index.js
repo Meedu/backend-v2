@@ -50,6 +50,15 @@ const routes = [
     },
   },
   {
+    path: "/resource/videos/index",
+    component: () => import("@/views/resource/videos/index"),
+    name: "ResourceVideos",
+    meta: {
+      title: "title.resource_videos",
+      keepAlive: true,
+    },
+  },
+  {
     path: "/order/index",
     component: () => import("@/views/order/index"),
     name: "Orderlist",

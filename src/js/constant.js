@@ -4,6 +4,7 @@ export default {
     Role: "Role",
     Addrole: "Role",
     Editrole: "Role",
+    ResourceVideos: "ResourceVideos",
     Orderlist: "Orderlist",
     OrderDetail: "Orderlist",
     OrderRefund: "Orderlist",

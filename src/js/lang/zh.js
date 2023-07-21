@@ -9,6 +9,8 @@ const zh = {
     decoration: "装修",
     decoration_pc: "电脑端",
     decoration_h5: "移动端",
+    resource: "资源库",
+    resource_videos: "视频库",
     role: "VIP会员",
     order: "全部订单",
     "order-detail": "订单详情",
