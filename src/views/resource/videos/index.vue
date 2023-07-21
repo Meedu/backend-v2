@@ -223,7 +223,9 @@ export default {
             newbox.push(this.results[i].storage_file_id);
           }
         }
-        this.getAliRecords(newbox);
+        if (newbox.length > 0) {
+          this.getAliRecords(newbox);
+        }
       });
     },
     destorymulti() {
