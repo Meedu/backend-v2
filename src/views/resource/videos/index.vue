@@ -148,7 +148,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["user", "systemConfig"]),
+    ...mapState(["user", "enabledAddons", "systemConfig"]),
     isNoService() {
       return this.systemConfig.video.default_service === "";
     },
@@ -250,10 +250,10 @@ export default {
             tenbox.push(this.results[i].storage_file_id);
           }
         }
-        if (newbox.length > 0) {
+        if (newbox.length > 0 && this.enabledAddons["AliyunHls"]) {
           this.getAliRecords(newbox);
         }
-        if (tenbox.length > 0) {
+        if (tenbox.length > 0 && this.enabledAddons["TencentCloudHls"]) {
           this.getTenRecords(newbox);
         }
       });
