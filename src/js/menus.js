@@ -31,7 +31,7 @@ export default [
   {
     name: "title.resource",
     key: "Resource",
-    icon: "icon-icon-lesson",
+    icon: "icon-icon-file",
     children: [
       {
         name: "title.resource_videos",

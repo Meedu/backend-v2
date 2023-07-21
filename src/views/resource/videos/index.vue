@@ -51,7 +51,20 @@
         </el-table-column>
         <el-table-column label="转码" width="150">
           <template slot-scope="scope">
-            <span v-if="checkTrans(scope.row.storage_file_id)">已转码</span>
+            <span
+              v-if="
+                scope.row.storage_driver === 'aliyun' &&
+                checkTrans(scope.row.storage_file_id)
+              "
+              >已转码</span
+            >
+            <span
+              v-else-if="
+                scope.row.storage_driver === 'tencent' &&
+                checkTenTrans(scope.row.storage_file_id)
+              "
+              >已转码</span
+            >
             <span v-else>-</span>
           </template>
         </el-table-column>
@@ -67,6 +80,13 @@
               text="转码"
               p="ali-hls-transcode.submit"
               @click="submit(scope.row.storage_file_id)"
+              type="primary"
+            ></p-link>
+            <p-link
+              v-else-if="scope.row.storage_driver === 'tencent'"
+              text="转码"
+              p="addons.TencentCloudHls.transcode.submit"
+              @click="tenSubmit(scope.row.storage_file_id)"
               type="primary"
             ></p-link>
           </template>
@@ -124,6 +144,7 @@ export default {
       results: [],
       visible: false,
       records: {},
+      tenRecords: {},
     };
   },
   computed: {
@@ -157,6 +178,9 @@ export default {
   methods: {
     checkTrans(val) {
       return typeof this.records[val] !== "undefined";
+    },
+    checkTenTrans(val) {
+      return typeof this.tenRecords[val] !== "undefined";
     },
     openUploadItem() {
       if (this.isNoService) {
@@ -218,13 +242,19 @@ export default {
         this.results = res.data.data;
         this.total = res.data.total;
         var newbox = [];
+        var tenbox = [];
         for (var i = 0; i < this.results.length; i++) {
           if (this.results[i].storage_driver === "aliyun") {
             newbox.push(this.results[i].storage_file_id);
+          } else if (this.results[i].storage_driver === "tencent") {
+            tenbox.push(this.results[i].storage_file_id);
           }
         }
         if (newbox.length > 0) {
           this.getAliRecords(newbox);
+        }
+        if (tenbox.length > 0) {
+          this.getTenRecords(newbox);
         }
       });
     },
@@ -265,31 +295,85 @@ export default {
         file_ids: newbox,
       })
         .then((res) => {
-          this.records = res.data.records;
-          this.loading = false;
+          if (res.data.records) {
+            this.records = res.data.records;
+          }
+        })
+        .catch((e) => {
+          this.$message.error(e.message);
+        });
+    },
+    getTenRecords(newbox) {
+      this.$api.Resource.TencentTranscodeRecords({
+        file_ids: newbox,
+      })
+        .then((res) => {
+          if (res.data.records) {
+            this.tenRecords = res.data.records;
+          }
         })
         .catch((e) => {
           this.$message.error(e.message);
         });
     },
     submit(fileId) {
-      if (this.loading) {
-        return;
-      }
-      let ids = [];
-      ids.push(fileId);
-      this.loading = true;
-      this.$api.Resource.AliyunTranscode({
-        file_ids: ids,
+      this.$confirm("确认操作？", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       })
         .then(() => {
-          this.$message.success(this.$t("common.success"));
-          this.loading = false;
-          this.getData();
+          if (this.loading) {
+            return;
+          }
+          let ids = [];
+          ids.push(fileId);
+          this.loading = true;
+          this.$api.Resource.AliyunTranscode({
+            file_ids: ids,
+          })
+            .then(() => {
+              this.$message.success(this.$t("common.success"));
+              this.loading = false;
+              this.getData();
+            })
+            .catch((e) => {
+              this.$message.error(e.message);
+              this.loading = false;
+            });
         })
-        .catch((e) => {
-          this.$message.error(e.message);
-          this.loading = false;
+        .catch(() => {
+          //点击删除按钮的操作
+        });
+    },
+    tenSubmit(fileId) {
+      this.$confirm("确认操作？", "警告", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          if (this.loading) {
+            return;
+          }
+          let ids = [];
+          ids.push(fileId);
+          this.loading = true;
+          this.$api.Resource.TencentTranscode({
+            file_ids: ids,
+          })
+            .then(() => {
+              this.$message.success(this.$t("common.success"));
+              this.loading = false;
+              this.getData();
+            })
+            .catch((e) => {
+              this.$message.error(e.message);
+              this.loading = false;
+            });
+        })
+        .catch(() => {
+          //点击删除按钮的操作
         });
     },
   },

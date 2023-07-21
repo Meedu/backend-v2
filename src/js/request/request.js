@@ -41,6 +41,12 @@ const Api = {
     AliyunTranscodeRecords(params) {
       return get(`/backend/addons/AliyunHls/transcode-records`, params);
     },
+    TencentTranscode(params) {
+      return post(`/backend/addons/TencentCloudHls/transcode-submit`, params);
+    },
+    TencentTranscodeRecords(params) {
+      return get(`/backend/addons/TencentCloudHls/transcode-records`, params);
+    },
   },
   Stat: {
     Statistic(params) {
