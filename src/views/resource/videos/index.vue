@@ -309,8 +309,8 @@ export default {
         file_ids: newbox,
       })
         .then((res) => {
-          if (res.data.records) {
-            this.tenRecords = res.data.records;
+          if (res.data) {
+            this.tenRecords = res.data;
           }
         })
         .catch((e) => {
