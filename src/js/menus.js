@@ -203,7 +203,7 @@ export default [
   {
     name: "title.stats.name",
     key: "Stats",
-    icon: "icon-icon-stat",
+    icon: "icon-icon-data-n",
     children: [
       {
         name: "title.stats.transaction.name",
